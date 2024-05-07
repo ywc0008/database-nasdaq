@@ -1,0 +1,58 @@
+{
+    "data" : [
+        {
+            "date" : "2024-04-18",
+            "stock_closing_price" : 15601.50,
+            "stock_market_price" : 15705.70,
+            "stock_high_price" : 15786.01,
+            "stock_low_price" : 15786.01,
+            "stock_trading_volume" : 929560000,
+            "stock_movement" : -0.52
+        },
+        {
+            "date" : "2024-04-19",
+            "stock_closing_price" : 15282.01,
+            "stock_market_price" : 15548.78,
+            "stock_high_price" : 15575.68,
+            "stock_low_price" : 15223.16,
+            "stock_trading_volume" : 1110000000,
+            "stock_movement" : -2.05
+        },
+        {
+            "date" : "2024-04-22",
+            "stock_closing_price" : 15451.30,
+            "stock_market_price" : 15394.54,
+            "stock_high_price" : 15538.82,
+            "stock_low_price" : 15265.95,
+            "stock_trading_volume" : 92332000000,
+            "stock_movement" : 1.11
+        },
+        {
+            "date" : "2024-04-23",
+            "stock_closing_price" : 15696.64,
+            "stock_market_price" : 15525.55,
+            "stock_high_price" : 15730.18,
+            "stock_low_price" : 15511.43,
+            "stock_trading_volume" : 971680000,
+            "stock_movement" : 1.59
+        },
+        {
+            "date" : "2024-04-24",
+            "stock_closing_price" : 15712.75,
+            "stock_market_price" : 15799.44,
+            "stock_high_price" : 15838.79,
+            "stock_low_price" : 15635.22,
+            "stock_trading_volume" : 944860000,
+            "stock_movement" : 0.10
+        },
+        {
+            "date" : "2024-04-25",
+            "stock_closing_price" : 15611.76,
+            "stock_market_price" : 15375.26,
+            "stock_high_price" : 15644.51,
+            "stock_low_price" : 15343.91,
+            "stock_trading_volume" : 972670000,
+            "stock_movement" : -0.64
+        }
+    ]
+}
