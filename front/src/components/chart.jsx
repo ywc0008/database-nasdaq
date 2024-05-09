@@ -26,6 +26,7 @@ const Chart = () => {
   return (
     <ApexChart
       type="candlestick"
+      height="500"
       series={[
         {
           data: data.data.map((item) => {
@@ -42,16 +43,21 @@ const Chart = () => {
       options={{
         theme: { mode: "dark" },
         chart: {
-          toolbar: { show: true },
+          toolbar: { show: false },
           background: "transparent",
         },
         stroke: { curve: "smooth", width: 1 },
         grid: { show: true },
         yaxis: { show: true },
         xaxis: {
-          labels: { show: false },
-          axisTicks: { show: false },
-          axisBorder: { show: false },
+          labels: {
+            show: true,
+            datetimeFormatter: {
+              day: 'yyyy.MM.dd',
+            },
+          },
+          axisTicks: { show: true },
+          axisBorder: { show: true },
           type: "datetime",
         },
       }}

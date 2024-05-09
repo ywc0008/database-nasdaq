@@ -8,7 +8,9 @@ function App() {
         <input type="text" placeholder="원하는 기간을 입력하세요" />
         <input type="text" placeholder="원하는 비율을 입력하세요" />
       </div>
+      <div className="chart">
       <Chart />
+      </div>
     </div>
   );
 }

@@ -4,3 +4,12 @@
     display: flex;
     margin: 20px 0px;
 }
+.App{
+    width: 100%;
+}
+.chart{
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    width: 100%;
+}
