@@ -30,6 +30,7 @@ conda activate 이름
 
 pip install fastapi
 pip install "uvicorn[standard]"
+pip install sqlite
 
 <!-- 설치 할 것들 한번만 설치하면 됨 -->
 
