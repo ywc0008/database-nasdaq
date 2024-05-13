@@ -25,7 +25,7 @@ async def get_nasdaq_chart():
     try:
         conn = connect_db()
         c = conn.cursor()
-        c.execute("SELECT * FROM stocks ORDER BY date DESC LIMIT 10")
+        c.execute("SELECT * FROM stocks ORDER BY date DESC")
         rows = c.fetchall()
 
         if not rows:
