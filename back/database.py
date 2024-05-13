@@ -12,7 +12,7 @@ try:
     print("현재 작업디렉토리: " + os.getcwd())
 
     # 판다스 사용 데이터 읽기
-    csv_data = pd.read_csv("back/나스닥 100.csv")
+    csv_data = pd.read_csv("back/data1.csv")
 
     # 데이터프레임이 비어 있는 경우 처리
     if csv_data.empty:
