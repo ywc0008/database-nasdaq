@@ -22,19 +22,33 @@ def connect_db():
 # API 엔드포인트 작성
 @app.get("/nasdaq_chart")
 async def get_nasdaq_chart():
-    conn = connect_db()
-    c = conn.cursor()
-    c.execute("SELECT * FROM stocks ORDER BY date DESC LIMIT 10")
-    rows = c.fetchall()
-    conn.close()
-    if not rows:
-        raise HTTPException(status_code=404, detail="Chart data not found")
+    try:
+        conn = connect_db()
+        c = conn.cursor()
+        c.execute("SELECT * FROM stocks ORDER BY date DESC LIMIT 10")
+        rows = c.fetchall()
 
-    column_names = [description[0] for description in c.description]  # 컬럼명 가져오기
+        if not rows:
+            raise HTTPException(status_code=404, detail="Chart data not found")
 
-    # 데이터를 JSON 형식으로 변환
-    chart_data = []
-    for row in rows:
-        chart_data.append({column_names[i]: row[i] for i in range(len(row))})
+        # 컬럼명 정의
+        column_names = [
+            "date",
+            "stock_closing_price",
+            "stock_high_price",
+            "stock_low_price",
+            "stock_market_price",
+            "volume",
+            "change",
+        ]
 
-    return chart_data
+        # 데이터를 JSON 형식으로 변환
+        chart_data = []
+        for row in rows:
+            chart_data.append({column_names[i]: row[i] for i in range(len(row))})
+
+        return chart_data
+    except sqlite3.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        conn.close()
