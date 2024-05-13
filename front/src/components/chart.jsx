@@ -50,10 +50,10 @@ const Chart = () => {
             data: chartdata.map((item) => {
               return [
                 item.date,
-                item.stock_high_price,
-                item.stock_low_price,
-                item.stock_closing_price,
-                item.stock_market_price,
+                Number(item.stock_high_price.split(',').join('')),
+                Number(item.stock_low_price.split(',').join('')),
+                Number(item.stock_market_price.split(',').join('')),
+                Number(item.stock_closing_price.split(',').join('')),
               ];
             }),
           },
