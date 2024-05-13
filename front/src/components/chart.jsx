@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ApexChart from "react-apexcharts";
-import data from "../DB.json";
 
 /* const Chart = () => {
   return (
@@ -22,47 +21,68 @@ import data from "../DB.json";
   );
 }; */
 
+
 const Chart = () => {
+  const [chartdata,setChartdata]=useState([])
+  const [loading, setLoading] = useState(true);
+  const getChartdata=async()=>{
+    const json=await(
+      await  fetch("http://127.0.0.1:8000/nasdaq_chart")
+    ).json();
+    setChartdata(json);
+    setLoading(false);
+  }
+  console.log(chartdata);
+  useEffect(()=>{
+    getChartdata();
+  },[])
   return (
-    <ApexChart
-      type="candlestick"
-      height="500"
-      series={[
-        {
-          data: data.data.map((item) => {
-            return [
-              item.date,
-              item.stock_closing_price,
-              item.stock_high_price,
-              item.stock_low_price,
-              item.stock_market_price,
-            ];
-          }),
-        },
-      ]}
-      options={{
-        theme: { mode: "dark" },
-        chart: {
-          toolbar: { show: false },
-          background: "transparent",
-        },
-        stroke: { curve: "smooth", width: 1 },
-        grid: { show: true },
-        yaxis: { show: true },
-        xaxis: {
-          labels: {
-            show: true,
-            datetimeFormatter: {
-              day: 'yyyy.MM.dd',
-            },
+    <div>
+       {loading ? (
+        <h1>로딩중...</h1>
+      ) : (
+
+        <ApexChart
+        type="candlestick"
+        height="500"
+        series={[
+          {
+            data: chartdata.map((item) => {
+              return [
+                item.date,
+                item.stock_high_price,
+                item.stock_low_price,
+                item.stock_closing_price,
+                item.stock_market_price,
+              ];
+            }),
           },
-          axisTicks: { show: true },
-          axisBorder: { show: true },
-          type: "datetime",
-        },
-      }}
-    ></ApexChart>
-  );
+        ]}
+        options={{
+          theme: { mode: "dark" },
+          chart: {
+            toolbar: { show: false },
+            background: "transparent",
+          },
+          stroke: { curve: "smooth", width: 1 },
+          grid: { show: true },
+          yaxis: { show: true },
+          xaxis: {
+            labels: {
+              show: true,
+              datetimeFormatter: {
+                day: 'yyyy.MM.dd',
+              },
+            },
+            axisTicks: { show: true },
+            axisBorder: { show: true },
+            type: "datetime",
+          },
+        }}
+      ></ApexChart>
+      )}
+    </div>
+  )
 };
 
 export default Chart;

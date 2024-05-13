@@ -23,7 +23,7 @@ csv_data = read_csv("나스닥 100.csv")
 # 테이블 생성 (예시)
 c.execute(
     """CREATE TABLE IF NOT EXISTS stocks
-             (date datetime, stock_closing_price int, stock_high_price int, stock_low_price int, stock_market_price int, volume int, change int)"""
+             (date datetime, stock_market_price int, stock_closing_price int, stock_high_price int, stock_low_price int,  volume int, change int)"""
 )
 
 # 데이터 삽입 예시
