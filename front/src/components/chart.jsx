@@ -61,7 +61,7 @@ const Chart = () => {
         options={{
           theme: { mode: "dark" },
           chart: {
-            toolbar: { show: false },
+            toolbar: { show: true },
             background: "transparent",
           },
           stroke: { curve: "smooth", width: 1 },
