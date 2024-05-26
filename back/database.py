@@ -60,9 +60,7 @@ try:
 
     # 변경사항 저장
     conn.commit()
-
-    # 조회
-
+    
     # PRAGMA 문을 사용하여 테이블의 구조 확인
     c.execute(f"PRAGMA table_info({Tname})")
 
