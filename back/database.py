@@ -4,7 +4,7 @@ import pandas as pd
 
 try:
     # SQLite 데이터베이스 연결
-    conn = sqlite3.connect("chart.db")
+    conn = sqlite3.connect("back/chart.db")
 
     # 커서 생성
     c = conn.cursor()
@@ -12,7 +12,16 @@ try:
     print("현재 작업디렉토리: " + os.getcwd())
 
     # 판다스 사용 데이터 읽기
-    csv_data = pd.read_csv("back/data1.csv")
+    # 파일이 들어있는 디렉토리 경로
+    directory = "back/"
+
+    csv_data=pd.DataFrame()
+    # 디렉토리 내의 파일들을 확인하고, "나스닥"으로 시작하는 파일을 찾음
+    for filename in os.listdir(directory):
+        if filename.startswith("나스닥"):
+            file_path = os.path.join(directory, filename)
+            temp = pd.read_csv(file_path)
+            csv_data = pd.concat([csv_data, temp], ignore_index=True)
 
     # 데이터프레임이 비어 있는 경우 처리
     if csv_data.empty:
@@ -31,7 +40,7 @@ try:
         }
     )
 
-    # 테이블 생성 (예시)
+    # 테이블 생성
     c.execute(
         """CREATE TABLE IF NOT EXISTS stocks
                 (
@@ -51,9 +60,7 @@ try:
 
     # 변경사항 저장
     conn.commit()
-
-    # 조회
-
+    
     # PRAGMA 문을 사용하여 테이블의 구조 확인
     c.execute(f"PRAGMA table_info({Tname})")
 
@@ -62,13 +69,13 @@ try:
     for column in table_info:
         print(column)
 
-    c.execute(f"SELECT * FROM {Tname} WHERE date LIKE '%2024-04%'")
+    #2024-04의 데이터확인
+    c.execute(f"SELECT * FROM {Tname} WHERE date LIKE '%2024%'")
     table_data = c.fetchmany(6)
 
     # 내부 데이터 출력
     for row in table_data:
         print(row)
-
 except Exception as e:
     print("오류 발생:", e)
 
