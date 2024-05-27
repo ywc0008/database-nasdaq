@@ -113,5 +113,12 @@ plt.xticks(np.arange(len(target)), pd.to_datetime(target.index.values).strftime(
 plt.axvline(x=len(base)-1, c='grey', linestyle='--')
 plt.axvspan(len(base.values)-1, len(target.values)-1, facecolor='ivory', alpha=0.7)
 plt.legend()
+
+#그래프 이미지 저장
+plt.savefig('back/sim_graph.png')
+
+#출력
 plt.show()
+
+
 
