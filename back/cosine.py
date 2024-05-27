@@ -95,8 +95,7 @@ print(pd.Series(sim_list).sort_values(ascending=False).head(20))
 
 
 
-#가장 높은 유사도를 갖는 값 그래프로 출력
-
+# 가장 높은 유사도를 갖는 값 그래프로 출력
 # 높은 유사도를 기록한 인덱스 대입
 idx=1906
 
@@ -116,9 +115,5 @@ plt.legend()
 
 #그래프 이미지 저장
 plt.savefig('back/sim_graph.png')
-
-#출력
-plt.show()
-
 
 
