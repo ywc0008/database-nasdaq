@@ -95,8 +95,7 @@ print(pd.Series(sim_list).sort_values(ascending=False).head(20))
 
 
 
-#가장 높은 유사도를 갖는 값 그래프로 출력
-
+# 가장 높은 유사도를 갖는 값 그래프로 출력
 # 높은 유사도를 기록한 인덱스 대입
 idx=1906
 
@@ -113,5 +112,8 @@ plt.xticks(np.arange(len(target)), pd.to_datetime(target.index.values).strftime(
 plt.axvline(x=len(base)-1, c='grey', linestyle='--')
 plt.axvspan(len(base.values)-1, len(target.values)-1, facecolor='ivory', alpha=0.7)
 plt.legend()
-plt.show()
+
+#그래프 이미지 저장
+plt.savefig('back/sim_graph.png')
+
 
