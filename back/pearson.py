@@ -100,13 +100,16 @@ for i in range(mv_cnt):
     # 리스트에 추가
     sim_list.append(pearson_sim)
 
+
+
 #리스트 오름차순 정렬
-sorted_list=pd.Series(sim_list).sort_values(ascending=False).head(20)
+sorted_list=pd.Series(sim_list).sort_values(ascending=False).head(10)
 
 #두번째로 높은 값의 인덱스 번호 추출
 second_value=sorted_list.index[1]
 
 print(second_value)
+
 
 # 가장 높은 유사도를 갖는 값 그래프로 출력
 
