@@ -103,7 +103,7 @@ for i in range(mv_cnt):
 
 
 #리스트 오름차순 정렬
-sorted_list=pd.Series(sim_list).sort_values(ascending=False).head(10)
+sorted_list=pd.Series(sim_list).sort_values(ascending=False).head(20)
 
 #두번째로 높은 값의 인덱스 번호 추출
 second_value=sorted_list.index[1]

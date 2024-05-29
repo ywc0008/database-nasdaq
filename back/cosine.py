@@ -40,6 +40,7 @@ def cosine_similarity(x, y):
 db_con = connect_db()
 data = read_db(db_con)
 
+
 df = pd.DataFrame(
     data,
     columns=[
@@ -63,8 +64,8 @@ df["stock_closing_price"] = pd.to_numeric(
 )
 
 # 설정한 입력 날짜의 범위
-startdate = "2018-03-01"
-enddate = "2018-03-20"
+startdate = "2018-02-01"
+enddate = "2018-02-20"
 
 # 범위만큼 추출
 df_ = df.loc[startdate:enddate]
@@ -101,8 +102,9 @@ for i in range(mv_cnt):
     sim_list.append(cosine_sim)
 
 
-# 리스트 값 출력
-print(pd.Series(sim_list).sort_values(ascending=False).head(10))
+#리스트 오름차순 정렬
+sorted_list=pd.Series(sim_list).sort_values(ascending=False).head(20)
+
 second_value=sorted_list.index[1]
 # 리스트 값들을 JSON 형식으로 변환
 similarity = pd.Series(sim_list).sort_values(ascending=False).head(10).to_json()
@@ -135,9 +137,56 @@ plt.axvline(x=len(base) - 1, c="grey", linestyle="--")
 plt.axvspan(len(base.values) - 1, len(target.values) - 1, facecolor="ivory", alpha=0.7)
 plt.legend()
 
+#유사도를 db에 저장
+db_con.execute(
+        """CREATE TABLE IF NOT EXISTS cosine
+                (
+                idx int, 
+                similarity float
+                )"""
+    )
 
+#db안의 초기화
+db_con.execute("DELETE FROM cosine")
+
+#sorted_list값 db에 삽입
+for idx, sim in sorted_list.items():
+    db_con.execute("INSERT OR REPLACE INTO cosine (idx, similarity) VALUES (?, ?)", (int(idx),sim))
+
+db_con.commit()
 #그래프 이미지 저장
 plt.savefig('back/cosine_graph.png')
 
+#그래프 이미지 db에 저장
+db_con.execute('''
+    CREATE TABLE IF NOT EXISTS images (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        image BLOB NOT NULL
+    )
+''')
 
+#images 테이블 초기화
+db_con.execute("DELETE FROM images")
+
+# 이미지를 바이너리 데이터로 변환
+def convert_to_binary_data(filename):
+    with open(filename, 'rb') as file:
+        binary_data = file.read()
+    return binary_data
+
+# 이미지 삽입 또는 업데이트 함수
+def insert_or_replace_image(name, image_path):
+    binary_image = convert_to_binary_data(image_path)
+    db_con.execute('''
+        INSERT OR REPLACE INTO images (name, image)
+        VALUES (?, ?)
+    ''', (name, binary_image))
+    db_con.commit()
+
+# 이미지 삽입
+insert_or_replace_image('cosine_graph', "back/cosine_graph.png")
+
+plt.close()
+db_con.close()
 
