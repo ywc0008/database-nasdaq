@@ -64,8 +64,8 @@ df["stock_closing_price"] = pd.to_numeric(
 )
 
 # 설정한 입력 날짜의 범위
-startdate = "2018-03-01"
-enddate = "2018-03-20"
+startdate = "2018-02-01"
+enddate = "2018-02-20"
 
 # 범위만큼 추출
 df_ = df.loc[startdate:enddate]
@@ -157,5 +157,36 @@ db_con.commit()
 #그래프 이미지 저장
 plt.savefig('back/cosine_graph.png')
 
+#그래프 이미지 db에 저장
+db_con.execute('''
+    CREATE TABLE IF NOT EXISTS images (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        image BLOB NOT NULL
+    )
+''')
+
+#images 테이블 초기화
+db_con.execute("DELETE FROM images")
+
+# 이미지를 바이너리 데이터로 변환
+def convert_to_binary_data(filename):
+    with open(filename, 'rb') as file:
+        binary_data = file.read()
+    return binary_data
+
+# 이미지 삽입 또는 업데이트 함수
+def insert_or_replace_image(name, image_path):
+    binary_image = convert_to_binary_data(image_path)
+    db_con.execute('''
+        INSERT OR REPLACE INTO images (name, image)
+        VALUES (?, ?)
+    ''', (name, binary_image))
+    db_con.commit()
+
+# 이미지 삽입
+insert_or_replace_image('cosine_graph', "back/cosine_graph.png")
+
+plt.close()
 db_con.close()
 
