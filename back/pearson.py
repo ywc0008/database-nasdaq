@@ -100,13 +100,21 @@ for i in range(mv_cnt):
     # 리스트에 추가
     sim_list.append(pearson_sim)
 
-# 리스트 값 출력
-print(pd.Series(sim_list).sort_values(ascending=False).head(10))
+
+
+#리스트 오름차순 정렬
+sorted_list=pd.Series(sim_list).sort_values(ascending=False).head(10)
+
+#두번째로 높은 값의 인덱스 번호 추출
+second_value=sorted_list.index[1]
+
+print(second_value)
+
 
 # 가장 높은 유사도를 갖는 값 그래프로 출력
 
 # 높은 유사도를 기록한 인덱스 대입
-idx = 1906
+idx = second_value
 
 # target 변수에 종가 데이터의 [기준 인덱스] 부터 [기준 인덱스 + window_size + 예측(5일)] 데이터를 추출합니다
 target = df["stock_closing_price"].iloc[idx : idx + window_size + 5]
@@ -125,4 +133,5 @@ plt.xticks(
 plt.axvline(x=len(base) - 1, c="grey", linestyle="--")
 plt.axvspan(len(base.values) - 1, len(target.values) - 1, facecolor="ivory", alpha=0.7)
 plt.legend()
-plt.show()
+
+plt.savefig('back/pearson_graph.png')
