@@ -101,7 +101,7 @@ for i in range(mv_cnt):
     sim_list.append(pearson_sim)
 
 # 리스트 값 출력
-print(pd.Series(sim_list).sort_values(ascending=False).head(20))
+print(pd.Series(sim_list).sort_values(ascending=False).head(10))
 
 # 가장 높은 유사도를 갖는 값 그래프로 출력
 

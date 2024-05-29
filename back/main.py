@@ -52,3 +52,26 @@ async def get_nasdaq_chart():
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
         conn.close()
+
+
+@app.get("/cosine_similarity")
+async def get_cosine_similarity():
+    try:
+        conn = connect_db()
+        c = conn.cursor()
+        c.execute("SELECT stock_closing_price FROM stocks ORDER BY date ASC")
+        rows = c.fetchall()
+
+        if not rows:
+            raise HTTPException(status_code=404, detail="Stock data not found")
+
+        stock_closing_price = [row[0] for row in rows]
+
+        # 코사인 유사도 계산
+        similarity = cosine_similarity(stock_closing_price, stock_closing_price)
+
+        return {"cosine_similarity": similarity}
+    except sqlite3.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        conn.close()
