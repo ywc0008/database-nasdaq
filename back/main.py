@@ -59,18 +59,18 @@ async def get_cosine_similarity():
     try:
         conn = connect_db()
         c = conn.cursor()
-        c.execute("SELECT stock_closing_price FROM stocks ORDER BY date ASC")
+        c.execute("SELECT * FROM cosine ORDER BY similarity DESC")
         rows = c.fetchall()
 
         if not rows:
-            raise HTTPException(status_code=404, detail="Stock data not found")
+            raise HTTPException(status_code=404, detail="Chart data not found")
 
-        stock_closing_price = [row[0] for row in rows]
+        # 데이터를 JSON 형식으로 변환
+        chart_data = []
+        for row in rows:
+            chart_data.append({"idx": row[0], "similarity": row[1]})
 
-        # 코사인 유사도 계산
-        similarity = cosine_similarity(stock_closing_price, stock_closing_price)
-
-        return {"cosine_similarity": similarity}
+        return chart_data
     except sqlite3.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
