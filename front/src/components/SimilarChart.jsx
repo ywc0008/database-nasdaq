@@ -24,7 +24,6 @@ export const SimilarChart = () => {
   useEffect(() => {
     getImage();
   }, []);
-  console.log(`data:image/png;base64,${imagesrc}`);
   return (
     <h1>
       {loading ? (

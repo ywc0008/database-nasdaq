@@ -1,9 +1,11 @@
-from fastapi import FastAPI, HTTPException # type: ignore
+from fastapi import FastAPI, HTTPException,Request # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 import sqlite3
 import io
 from fastapi.responses import StreamingResponse
 import base64
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -55,6 +57,13 @@ async def get_nasdaq_chart():
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
         conn.close()
+        
+@app.post("/submit")
+async def submit_item(request: Request):
+    data = await request.json()
+    firstDate = data.get("firstDate")
+    secondDate = data.get("secondDate")
+    return {"firstDate" : firstDate, "secondDate" : secondDate}
 
 
 @app.get("/cosine_similarity")
