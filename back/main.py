@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException  # type: ignore
-from fastapi.middleware.cors import CORSMiddleware  # type: ignore
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import sqlite3
 from cosine import compute_cosine_similarity
-import io
-from fastapi.responses import StreamingResponse
 import base64
+import os
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -20,14 +20,29 @@ app.add_middleware(
 
 # SQLite 데이터베이스 연결 함수
 def connect_db():
-    return sqlite3.connect("chart.db")
+    try:
+        # 경로 수정
+        db_path = os.path.abspath("chart.db")
+        print(f"Connecting to database at: {db_path}")  # 디버깅 출력
+        con = sqlite3.connect(db_path)
+        return con
+    except Error as e:
+        print(f"Database connection error: {e}")
+        return None
 
 
-# API 엔드포인트 작성
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+
 @app.get("/nasdaq_chart")
 async def get_nasdaq_chart():
     try:
         conn = connect_db()
+        if conn is None:
+            raise HTTPException(status_code=500, detail="Database connection failed")
+
         c = conn.cursor()
         c.execute("SELECT * FROM stocks ORDER BY date DESC")
         rows = c.fetchall()
@@ -35,7 +50,6 @@ async def get_nasdaq_chart():
         if not rows:
             raise HTTPException(status_code=404, detail="Chart data not found")
 
-        # 컬럼명 정의
         column_names = [
             "date",
             "stock_closing_price",
@@ -45,8 +59,6 @@ async def get_nasdaq_chart():
             "volume",
             "change",
         ]
-
-        # 데이터를 JSON 형식으로 변환
         chart_data = []
         for row in rows:
             chart_data.append({column_names[i]: row[i] for i in range(len(row))})
@@ -64,7 +76,7 @@ async def get_cosine_similarity():
         similarity = compute_cosine_similarity()
         if not similarity:
             raise HTTPException(status_code=404, detail="Chart data not found")
-        return {"similarity": similarity}
+        return JSONResponse(content={"similarity": similarity})  # JSON 응답 반환
     except Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
@@ -73,14 +85,16 @@ async def get_cosine_similarity():
 async def get_cosine_graph():
     try:
         conn = connect_db()
+        if conn is None:
+            raise HTTPException(status_code=500, detail="Database connection failed")
+
         c = conn.cursor()
         c.execute("SELECT * FROM images WHERE id = 1")
         rows = c.fetchall()
-        # 예외처리
+
         if not rows:
             raise HTTPException(status_code=404, detail="Chart data not found")
 
-        # 데이터 JSON 형식으로 반환
         image_binary = rows[0]
         base64_string = base64.b64encode(image_binary[2]).decode("utf-8")
         return base64_string

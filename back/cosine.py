@@ -1,10 +1,9 @@
-# cosine.py
-
 import sqlite3
 from sqlite3 import Error
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 # 데이터베이스 테이블 이름
 Tname = "stocks"
@@ -13,10 +12,13 @@ Tname = "stocks"
 # SQLite 데이터베이스 연결 함수
 def connect_db():
     try:
-        con = sqlite3.connect("back/chart.db")
+        # 경로 수정
+        db_path = os.path.abspath("chart.db")
+        print(f"Connecting to database at: {db_path}")  # 디버깅 출력
+        con = sqlite3.connect(db_path)
         return con
-    except Error:
-        print(Error)
+    except Error as e:
+        print(f"Database connection error: {e}")
         return None
 
 
@@ -28,7 +30,7 @@ def read_db(con):
         data = cursor_db.fetchall()
         return data
     except Error as e:
-        print(e)
+        print(f"Read database error: {e}")
         return None
 
 
@@ -83,7 +85,12 @@ def compute_cosine_similarity():
 
     sorted_list = pd.Series(sim_list).sort_values(ascending=False).head(20)
     second_value = sorted_list.index[1]
-    similarity = pd.Series(sim_list).sort_values(ascending=False).head(10).to_json()
+    similarity = pd.Series(sim_list).sort_values(ascending=False).head(10).to_dict()
+
+    # 유사도를 내림차순으로 정렬
+    sorted_similarity = dict(
+        sorted(similarity.items(), key=lambda item: item[1], reverse=True)
+    )
 
     idx = second_value
     target = df["stock_closing_price"].iloc[idx : idx + window_size + 5]
@@ -117,7 +124,7 @@ def compute_cosine_similarity():
         )
 
     db_con.commit()
-    plt.savefig("back/cosine_graph.png")
+    plt.savefig("cosine_graph.png")
 
     db_con.execute(
         """
@@ -146,9 +153,12 @@ def compute_cosine_similarity():
         )
         db_con.commit()
 
-    insert_or_replace_image("cosine_graph", "back/cosine_graph.png")
+    insert_or_replace_image("cosine_graph", "cosine_graph.png")
 
     plt.close()
     db_con.close()
 
-    return similarity
+    return sorted_similarity  # 정렬된 Dict 형태로 반환
+
+
+print(compute_cosine_similarity())
