@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException # type: ignore
-from fastapi.middleware.cors import CORSMiddleware # type: ignore
+from fastapi import FastAPI, HTTPException  # type: ignore
+from fastapi.middleware.cors import CORSMiddleware  # type: ignore
 import sqlite3
+from cosine import compute_cosine_similarity
 import io
 from fastapi.responses import StreamingResponse
 import base64
@@ -60,24 +61,13 @@ async def get_nasdaq_chart():
 @app.get("/cosine_similarity")
 async def get_cosine_similarity():
     try:
-        conn = connect_db()
-        c = conn.cursor()
-        c.execute("SELECT * FROM cosine ORDER BY similarity DESC")
-        rows = c.fetchall()
-
-        if not rows:
+        similarity = compute_cosine_similarity()
+        if not similarity:
             raise HTTPException(status_code=404, detail="Chart data not found")
-
-        # 데이터를 JSON 형식으로 변환
-        chart_data = []
-        for row in rows:
-            chart_data.append({"idx": row[0], "similarity": row[1]})
-
-        return chart_data
-    except sqlite3.Error as e:
+        return {"similarity": similarity}
+    except Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-    finally:
-        conn.close()
+
 
 @app.get("/cosine_graph")
 async def get_cosine_graph():
@@ -86,13 +76,13 @@ async def get_cosine_graph():
         c = conn.cursor()
         c.execute("SELECT * FROM images WHERE id = 1")
         rows = c.fetchall()
-        #예외처리
+        # 예외처리
         if not rows:
             raise HTTPException(status_code=404, detail="Chart data not found")
 
-        #데이터 JSON 형식으로 반환
-        image_binary= rows[0]
-        base64_string = base64.b64encode(image_binary[2]).decode('utf-8')
+        # 데이터 JSON 형식으로 반환
+        image_binary = rows[0]
+        base64_string = base64.b64encode(image_binary[2]).decode("utf-8")
         return base64_string
 
     except sqlite3.Error as e:
