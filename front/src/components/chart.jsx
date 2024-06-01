@@ -9,7 +9,7 @@ const Chart = () => {
       await fetch("http://127.0.0.1:8000/nasdaq_chart")
     ).json();
     setChartdata(json);
-    setLoading(false);
+    //setLoading(false);
   };
   useEffect(() => {
     getChartdata();
