@@ -6,7 +6,7 @@ import { UserInput } from "./components/Input";
 function App() {
   return (
     <div className="App">
-      <div className="userInputContainer">
+      <div>
         <UserInput />
       </div>
       <div className="chart">

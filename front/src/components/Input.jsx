@@ -10,7 +10,7 @@ export const UserInput = () => {
     console.log(firstDate, secondDate);
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form onKeyPress={handleSubmit} className="userInputContainer">
       <input
         type="date"
         min="1980-03-18"
@@ -23,7 +23,6 @@ export const UserInput = () => {
         max="2024-05-01"
         onChange={getSecondDate}
       />
-      <button type="submit">검색하기</button>
     </form>
   );
 };
