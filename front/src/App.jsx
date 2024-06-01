@@ -1,15 +1,19 @@
 import "./App.css";
 import Chart from "./components/chart";
+import { SimilarChart } from "./components/SimilarChart";
+import { UserInput } from "./components/Input";
 
 function App() {
   return (
     <div className="App">
-      <div className="userInputContainer">
-        <input type="text" placeholder="원하는 기간을 입력하세요" />
-        <input type="text" placeholder="원하는 비율을 입력하세요" />
+      <div>
+        <UserInput />
       </div>
       <div className="chart">
-      <Chart />
+        <Chart />
+      </div>
+      <div className="similarChart">
+        <SimilarChart />
       </div>
     </div>
   );
