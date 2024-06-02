@@ -1,32 +1,18 @@
-import React from "react";
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 
-export const UserInput = () => {
-  const [firstDate, setFirstDate] = useState("");
-  const [secondDate, setSecondDate] = useState("");
+export const UserInput = ({ setFirstDate, setSecondDate, onSubmit }) => {
+  const [pending, setPending] = useState(false);
+
   const getFirstDate = (event) => setFirstDate(event.target.value);
   const getSecondDate = (event) => setSecondDate(event.target.value);
-  const [postData, setPostData] = useState({ firstDate: "", secondDate: "" });
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const dataToSend = {
-      firstDate: firstDate,
-      secondDate: secondDate,
-    };
-    setPostData(dataToSend);
-    axios.defaults.baseURL = "http://127.0.0.1:8000";
-    try {
-      const res = await axios.post("http://127.0.0.1:8000/submit", dataToSend, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(res);
-    } catch (e) {
-      console.log(`err : ${e}`);
-    }
+    setPending(true); // 데이터 전송 시작 시 pending 상태로 변경
+    await onSubmit(); // onSubmit 함수 실행 (데이터 전송)
+    setPending(false); // 데이터 전송 완료 후 pending 상태 해제
   };
+
   return (
     <form onSubmit={handleSubmit} className="userInputContainer">
       <input
@@ -41,7 +27,9 @@ export const UserInput = () => {
         max="2024-05-01"
         onChange={getSecondDate}
       />
-      <button type="submit">Submit</button>
+      <button type="submit" disabled={pending}>
+        {pending ? "분석중..." : "검색하기"}
+      </button>
     </form>
   );
 };
