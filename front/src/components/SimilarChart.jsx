@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-export const SimilarChart = () => {
+export const SimilarChart = ({ similarityData, firstDate, secondDate }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imagesrc, setImageSrc] = useState("");
+
   const getSimilarData = async () => {
+    if (!firstDate || !secondDate) return;
+
     const res = await (
-      await fetch("http://127.0.0.1:8000/cosine_similarity")
+      await fetch(`http://127.0.0.1:8000/cosine_similarity?firstDate=${firstDate}&secondDate=${secondDate}`)
     ).json();
     setData(res);
     setLoading(false);
@@ -20,7 +23,8 @@ export const SimilarChart = () => {
 
   useEffect(() => {
     getSimilarData();
-  }, []);
+  }, [firstDate, secondDate]);
+
   useEffect(() => {
     getImage();
   }, []);

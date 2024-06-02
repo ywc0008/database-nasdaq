@@ -1,31 +1,12 @@
 import React from "react";
-import { useState } from "react";
-import axios from "axios";
 
-export const UserInput = () => {
-  const [firstDate, setFirstDate] = useState("");
-  const [secondDate, setSecondDate] = useState("");
+export const UserInput = ({ setFirstDate, setSecondDate, onSubmit }) => {
   const getFirstDate = (event) => setFirstDate(event.target.value);
   const getSecondDate = (event) => setSecondDate(event.target.value);
-  const [postData, setPostData] = useState({ firstDate: "", secondDate: "" });
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const dataToSend = {
-      firstDate: firstDate,
-      secondDate: secondDate,
-    };
-    setPostData(dataToSend);
-    axios.defaults.baseURL = "http://127.0.0.1:8000";
-    try {
-      const res = await axios.post("http://127.0.0.1:8000/submit", dataToSend, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(res);
-    } catch (e) {
-      console.log(`err : ${e}`);
-    }
+    onSubmit();
+    
   };
   return (
     <form onSubmit={handleSubmit} className="userInputContainer">
