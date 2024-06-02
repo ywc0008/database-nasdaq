@@ -1,49 +1,72 @@
 import React, { useState, useEffect } from "react";
-export const SimilarChart = ({ similarityData, firstDate, secondDate }) => {
+
+export const SimilarChart = ({ firstDate, secondDate }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imagesrc, setImageSrc] = useState("");
+  const [pending, setPending] = useState(false); // pending 상태 추가
 
   const getSimilarData = async () => {
     if (!firstDate || !secondDate) return;
 
-    const res = await (
-      await fetch(`http://127.0.0.1:8000/cosine_similarity?firstDate=${firstDate}&secondDate=${secondDate}`)
-    ).json();
-    setData(res);
-    setLoading(false);
+    setPending(true); // 데이터 가져오기 시작 시 pending 상태로 변경
+
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/cosine_similarity?firstDate=${firstDate}&secondDate=${secondDate}`
+      );
+      const result = await res.json();
+      setData(result.similarity);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching similarity data:", error);
+    } finally {
+      setPending(false); // 데이터 가져오기 완료 시 pending 상태 해제
+    }
   };
 
   const getImage = async () => {
-    const img = await (
-      await fetch("http://127.0.0.1:8000/cosine_graph")
-    ).json();
-    setImageSrc(img);
+    try {
+      const res = await fetch("http://127.0.0.1:8000/cosine_graph");
+      const img = await res.json();
+      setImageSrc(img);
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
   };
 
   useEffect(() => {
-    getSimilarData();
+    if (firstDate && secondDate) {
+      getSimilarData();
+      getImage();
+    }
   }, [firstDate, secondDate]);
 
-  useEffect(() => {
-    getImage();
-  }, []);
   return (
-    <h1>
-      {loading ? (
-        <h1>로딩중...</h1>
+    <div>
+      {pending ? (
+        <h1>데이터 가져오는 중...</h1>
+      ) : loading ? (
+        <h1>Loading...</h1>
       ) : (
-        data.map((item, index) => (
+        // 데이터가 있는 경우
+        <div>
           <ul>
-            <li key={index}>{item.similarity}</li>
+            {Object.entries(data).map(([index, similarity]) => (
+              <li key={index}>
+                {`구간: ${index}, 코사인 유사도: ${similarity}`}
+              </li>
+            ))}
+          </ul>
+          {imagesrc && (
             <img
               style={{ height: "600px", width: "600px" }}
               src={`data:image/png;base64,${imagesrc}`}
-              alt={`Similarity chart ${index}`}
+              alt="Similarity chart"
             />
-          </ul>
-        ))
+          )}
+        </div>
       )}
-    </h1>
+    </div>
   );
 };
