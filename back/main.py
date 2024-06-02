@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 import sqlite3
@@ -80,13 +80,23 @@ async def submit_item(request: Request):
     data = await request.json()
     firstDate = data.get("firstDate")
     secondDate = data.get("secondDate")
-    return {"firstDate": firstDate, "secondDate": secondDate}
+
+    if not firstDate or not secondDate:
+        raise HTTPException(status_code=400, detail="Invalid date range provided")
+
+    similarity = compute_cosine_similarity(firstDate, secondDate)
+    return {"firstDate": firstDate, "secondDate": secondDate, "similarity": similarity}
 
 
 @app.get("/cosine_similarity")
-async def get_cosine_similarity():
+async def get_cosine_similarity(
+    firstDate: str = Query(...), secondDate: str = Query(...)
+):
     try:
-        similarity = compute_cosine_similarity()
+        if not firstDate or not secondDate:
+            raise HTTPException(status_code=400, detail="Invalid date range provided")
+
+        similarity = compute_cosine_similarity(firstDate, secondDate)
         if not similarity:
             raise HTTPException(status_code=404, detail="Chart data not found")
         return JSONResponse(content={"similarity": similarity})  # JSON 응답 반환

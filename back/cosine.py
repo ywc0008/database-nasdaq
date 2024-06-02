@@ -40,7 +40,7 @@ def cosine_similarity(x, y):
 
 
 # 메인 함수
-def compute_cosine_similarity():
+def compute_cosine_similarity(startdate, enddate):
     db_con = connect_db()
     if db_con is None:
         return "Database connection failed"
@@ -67,8 +67,6 @@ def compute_cosine_similarity():
         df["stock_closing_price"].str.replace(",", ""), errors="coerce"
     )
 
-    startdate = "2018-02-01"
-    enddate = "2018-02-20"
     df_ = df.loc[startdate:enddate]
     close = df_["stock_closing_price"]
     base = (close - close.min()) / (close.max() - close.min())
@@ -159,6 +157,3 @@ def compute_cosine_similarity():
     db_con.close()
 
     return sorted_similarity  # 정렬된 Dict 형태로 반환
-
-
-print(compute_cosine_similarity())
