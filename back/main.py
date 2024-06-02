@@ -1,5 +1,4 @@
-
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 import sqlite3
@@ -74,13 +73,14 @@ async def get_nasdaq_chart():
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
         conn.close()
-        
+
+
 @app.post("/submit")
 async def submit_item(request: Request):
     data = await request.json()
     firstDate = data.get("firstDate")
     secondDate = data.get("secondDate")
-    return {"firstDate" : firstDate, "secondDate" : secondDate}
+    return {"firstDate": firstDate, "secondDate": secondDate}
 
 
 @app.get("/cosine_similarity")
