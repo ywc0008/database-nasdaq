@@ -112,15 +112,17 @@ async def get_cosine_graph():
             raise HTTPException(status_code=500, detail="Database connection failed")
 
         c = conn.cursor()
-        c.execute("SELECT * FROM images WHERE id = 1")
+        c.execute("SELECT image FROM cosine")
         rows = c.fetchall()
 
         if not rows:
             raise HTTPException(status_code=404, detail="Chart data not found")
-
-        image_binary = rows[0]
-        base64_string = base64.b64encode(image_binary[2]).decode("utf-8")
-        return base64_string
+        
+        strings=[]
+        for row in rows:
+            image_binary = row[0]
+            strings.append(base64.b64encode(image_binary).decode("utf-8"))
+        return strings
 
     except sqlite3.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
