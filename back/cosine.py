@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import io
 
 # 데이터베이스 테이블 이름
 Tname = "stocks"
@@ -82,7 +83,6 @@ def compute_cosine_similarity(startdate, enddate):
         sim_list.append(cosine_sim)
 
     sorted_list = pd.Series(sim_list).sort_values(ascending=False).head(20)
-    second_value = sorted_list.index[1]
     similarity = pd.Series(sim_list).sort_values(ascending=False).head(10).to_dict()
 
     # 유사도를 내림차순으로 정렬
@@ -90,70 +90,59 @@ def compute_cosine_similarity(startdate, enddate):
         sorted(similarity.items(), key=lambda item: item[1], reverse=True)
     )
 
-    idx = second_value
-    target = df["stock_closing_price"].iloc[idx : idx + window_size + 5]
-    target = (target - target.min()) / (target.max() - target.min())
+    print(sorted_similarity)
 
-    plt.plot(base.values, label="base", color="grey")
-    plt.plot(target.values, label="target", color="orangered")
-    plt.xticks(
-        np.arange(len(target)),
-        pd.to_datetime(target.index.values).strftime("%Y-%m-%d"),
-        rotation=45,
-    )
-    plt.axvline(x=len(base) - 1, c="grey", linestyle="--")
-    plt.axvspan(
-        len(base.values) - 1, len(target.values) - 1, facecolor="ivory", alpha=0.7
-    )
-    plt.legend()
+    #유사도를 받아 이미지 제작
+    def make_image(idx):
+        target = df["stock_closing_price"].iloc[idx : idx + window_size]
+        target = (target - target.min()) / (target.max() - target.min())
+
+        plt.plot(base.values, label="base", color="grey")
+        plt.plot(target.values, label="target", color="orangered")
+        plt.xticks(
+            np.arange(len(target)),
+            pd.to_datetime(target.index.values).strftime("%Y-%m-%d"),
+            rotation=25,
+        )
+        plt.axvline(x=len(base) - 1, c="grey", linestyle="--")
+        plt.axvspan(
+            len(base.values) - 1, len(target.values) - 1, facecolor="ivory", alpha=0.7
+        )
+        plt.legend()
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        plt.close()
+        buf.seek(0)
+        return buf.getvalue()
+    
+    # 기존의 cosine 테이블을 삭제하고 새로운 테이블을 생성
+    db_con.execute("DROP TABLE IF EXISTS cosine")
 
     db_con.execute(
         """CREATE TABLE IF NOT EXISTS cosine
                 (
                 idx int, 
-                similarity float
+                similarity float,
+                image BLOB
                 )"""
     )
-    db_con.execute("DELETE FROM cosine")
+
+    db_con.commit()
+
+
     for idx, sim in sorted_list.items():
+        image=make_image(idx)
         db_con.execute(
-            "INSERT OR REPLACE INTO cosine (idx, similarity) VALUES (?, ?)",
-            (int(idx), sim),
+            "INSERT OR REPLACE INTO cosine (idx, similarity, image) VALUES (?, ?, ?)",
+            (int(idx), sim, image),
         )
 
     db_con.commit()
-    plt.savefig("cosine_graph.png")
-
-    db_con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS images (
-            id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL,
-            image BLOB NOT NULL
-        )
-    """
-    )
-    db_con.execute("DELETE FROM images")
-
-    def convert_to_binary_data(filename):
-        with open(filename, "rb") as file:
-            binary_data = file.read()
-        return binary_data
-
-    def insert_or_replace_image(name, image_path):
-        binary_image = convert_to_binary_data(image_path)
-        db_con.execute(
-            """
-            INSERT OR REPLACE INTO images (name, image)
-            VALUES (?, ?)
-        """,
-            (name, binary_image),
-        )
-        db_con.commit()
-
-    insert_or_replace_image("cosine_graph", "cosine_graph.png")
 
     plt.close()
     db_con.close()
 
     return sorted_similarity  # 정렬된 Dict 형태로 반환
+
+compute_cosine_similarity("2014-05-06","2014-06-06")
