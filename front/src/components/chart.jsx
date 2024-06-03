@@ -24,7 +24,7 @@ const Chart = () => {
           height="500"
           series={[
             {
-              data: chartdata.map((item) => {
+              data: chartdata.slice(0, 100).map((item) => {
                 return [
                   item.date,
                   Number(item.stock_high_price.split(",").join("")),

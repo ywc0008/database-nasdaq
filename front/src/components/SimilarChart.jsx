@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 export const SimilarChart = ({ firstDate, secondDate }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [imagesrc, setImageSrc] = useState("");
+  const [imagesrc, setImageSrc] = useState([]);
   const [pending, setPending] = useState(false); // pending 상태 추가
 
   const getSimilarData = async () => {
@@ -41,7 +41,7 @@ export const SimilarChart = ({ firstDate, secondDate }) => {
       getImage();
     }
   }, [firstDate, secondDate]);
-
+  console.log(imagesrc);
   return (
     <div>
       {pending ? (
@@ -52,19 +52,17 @@ export const SimilarChart = ({ firstDate, secondDate }) => {
         // 데이터가 있는 경우
         <div>
           <ul>
-            {Object.entries(data).map(([index, similarity]) => (
+            {Object.entries(data).map(([index, similarity], idx) => (
               <li key={index}>
-                {`구간: ${index}, 코사인 유사도: ${similarity}`}
+                <div>{`구간: ${index}, 코사인 유사도: ${similarity}`}</div>
+                <img
+                  style={{ height: "600px", width: "600px" }}
+                  src={`data:image/png;base64,${imagesrc[idx]}`}
+                  alt="Similarity chart"
+                />
               </li>
             ))}
           </ul>
-          {imagesrc && (
-            <img
-              style={{ height: "600px", width: "600px" }}
-              src={`data:image/png;base64,${imagesrc}`}
-              alt="Similarity chart"
-            />
-          )}
         </div>
       )}
     </div>
