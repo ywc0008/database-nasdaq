@@ -82,7 +82,7 @@ def compute_cosine_similarity(startdate, enddate):
         cosine_sim = cosine_similarity(base, target)
         sim_list.append(cosine_sim)
 
-    sorted_list = pd.Series(sim_list).sort_values(ascending=False).head(20)
+    sorted_list = pd.Series(sim_list).sort_values(ascending=False).head(10)
     similarity = pd.Series(sim_list).sort_values(ascending=False).head(10).to_dict()
 
     # 유사도를 내림차순으로 정렬
